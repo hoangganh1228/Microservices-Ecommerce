@@ -5,8 +5,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+RUN npm install -g nodemon
+
 COPY . .
 
 EXPOSE 3003
 
-CMD ["npx", "ts-node", "server.ts"]
+CMD ["npm", "start"]

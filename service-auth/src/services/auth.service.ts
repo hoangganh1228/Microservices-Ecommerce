@@ -1,9 +1,10 @@
 import { AppDataSource } from "../config/data-source";
-import { User } from "../models/User";
+import { Account } from "../models/Account";
 import bcrypt from 'bcrypt';
+import { signToken } from "../utils/jwt";
 
 export class AuthService {
-    private userRepo = AppDataSource.getRepository(User);
+    private userRepo = AppDataSource.getRepository(Account);
     
     async register(email: string, password: string) {
         const existing = await this.userRepo.findOne({ where: {email} });
@@ -12,12 +13,15 @@ export class AuthService {
         const user = this.userRepo.create({ email, password: hashed });
         return this.userRepo.save(user);
     }
-
+    
     async login(email: string, password: string) {
         const user = await this.userRepo.findOne({ where: { email }});
         if (!user) throw new Error('Invalid credentials');
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) throw new Error('Invalid credentials');
-        return user;
+        
+        const token = signToken({email: user.email});
+        
+        return token;
     }
 } 

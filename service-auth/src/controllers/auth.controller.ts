@@ -14,8 +14,10 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const user = await authService.login(req.body.email, req.body.password);
-    res.status(200).json(user); // thực tế bạn nên trả JWT token
+    const token = await authService.login(req.body.email, req.body.password);
+    res.status(200).json({
+      token: token
+    });
   } catch (err: any) {
     res.status(401).json({ message: err.message });
   }
